@@ -6,8 +6,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 // https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 interface IWETH {
   function deposit() payable external;
-  function balanceOf(address guy) external returns (uint);
-  function approve(address guy, uint wad) external returns (bool);
+  function balanceOf(address guy) external returns (uint256);
+  function approve(address guy, uint256 wad) external returns (bool);
 }
 
 // https://etherscan.io/address/0x2147935d9739da4e691b8ae2e1437492a394ebf5
@@ -16,6 +16,12 @@ interface IUbiVault {
   function withdraw() external returns (uint256);
 }
 
+/**
+  To deposit, simply send ETH to the contract address. The ETH will collect
+  in the contract until anyone calls the deposit() function to put the ETH
+  into the vault. Only the admin can call withdraw(), this is needed for
+  rare vault maintenance.
+ */
 contract UbiVaultFund is Initializable {
   IWETH public weth;
   IUbiVault public ubiVault;
@@ -26,6 +32,8 @@ contract UbiVaultFund is Initializable {
     _;
   }
 
+  // This contract is upgradeable but should be managed by the same entity that governs the UBI
+  // contract and only should be modified by UIP.
   function initialize(address _admin, IWETH _weth, IUbiVault _ubiVault) public initializer {
     weth = _weth;
     ubiVault = _ubiVault;
@@ -33,8 +41,10 @@ contract UbiVaultFund is Initializable {
     weth.approve(address(this), type(uint256).max);
   }
 
+  // Allows ETH to be sent to the contract.
   receive() external payable {}
 
+  // Anyone can call this to gas a deposit when enough ETH has collected in the contract.
   function deposit() public {
     uint256 ethBalance = address(this).balance;
     require (ethBalance > 0, "No ETH to deposit.");
@@ -43,6 +53,7 @@ contract UbiVaultFund is Initializable {
     ubiVault.deposit(weth.balanceOf(address(this)));
   }
 
+  // The admin can use this method as part of rare vault maintenance.
   function withdraw() public onlyByAdmin {
     ubiVault.withdraw();
   }
