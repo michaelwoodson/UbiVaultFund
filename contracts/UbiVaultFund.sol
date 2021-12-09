@@ -38,7 +38,7 @@ contract UbiVaultFund is Initializable {
     weth = _weth;
     ubiVault = _ubiVault;
     admin = _admin;
-    weth.approve(address(this), type(uint256).max);
+    weth.approve(address(ubiVault), type(uint256).max);
   }
 
   // Allows ETH to be sent to the contract.
@@ -47,10 +47,13 @@ contract UbiVaultFund is Initializable {
   // Anyone can call this to gas a deposit when enough ETH has collected in the contract.
   function deposit() public {
     uint256 ethBalance = address(this).balance;
-    require (ethBalance > 0, "No ETH to deposit.");
-    (bool success, ) = address(weth).call{value: ethBalance}(abi.encodeWithSignature("deposit()"));
-    require(success, "Failed to convert to WETH");
-    ubiVault.deposit(weth.balanceOf(address(this)));
+    if (ethBalance > 0) {
+      (bool success, ) = address(weth).call{value: ethBalance}(abi.encodeWithSignature("deposit()"));
+      require(success, "Failed to convert to WETH");
+    }
+    uint256 wethBalance = weth.balanceOf(address(this));
+    require(wethBalance > 0, "No WETH to deposit.");
+    ubiVault.deposit(wethBalance);
   }
 
   // The admin can use this method as part of rare vault maintenance.
