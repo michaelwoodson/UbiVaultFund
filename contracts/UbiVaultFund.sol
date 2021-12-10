@@ -57,7 +57,16 @@ contract UbiVaultFund is Initializable {
   }
 
   // The admin can use this method as part of rare vault maintenance.
+  // Note: this withdraws from the vault to the contract, not to the caller.
   function withdraw() public onlyByAdmin {
     ubiVault.withdraw();
+  }
+
+  function setAdmin(address _admin) public onlyByAdmin {
+    admin = _admin;
+  }
+
+  function setUbiVault(IUbiVault _ubiVault) public onlyByAdmin {
+    ubiVault = _ubiVault;
   }
 }

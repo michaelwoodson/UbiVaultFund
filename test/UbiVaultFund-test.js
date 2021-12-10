@@ -10,7 +10,7 @@ describe("UbiVaultFund", function () {
   let ubiVaultFund, mockWeth, mockUbiVault, owner, alice;
 
   beforeEach(async () => {
-    [owner, alice] = await ethers.getSigners();
+    [owner, alice, bob] = await ethers.getSigners();
  
     mockWeth = await waffle.deployMockContract(owner, require("../artifacts/contracts/UbiVaultFund.sol/IWETH.json").abi);
     mockWeth.mock.approve.returns(true);
@@ -51,6 +51,17 @@ describe("UbiVaultFund", function () {
 
   it("Should not let alice withdraw.", async function () {
     await expect(ubiVaultFund.connect(alice).withdraw()).to.be.reverted;
+  });
+
+  it("Should change admin", async function() {
+    await ubiVaultFund.setAdmin(bob.address);
+    expect(await ubiVaultFund.admin()).to.equal(bob.address);
+  });
+
+  it("Should change vault", async function() {
+    const newMockUbiVault = await waffle.deployMockContract(owner, require("../artifacts/contracts/UbiVaultFund.sol/IUbiVault.json").abi);
+    await ubiVaultFund.setUbiVault(newMockUbiVault.address);
+    expect(await ubiVaultFund.ubiVault()).to.equal(newMockUbiVault.address);
   });
 
   it("Should work with the mainnet contracts.", async function () {
