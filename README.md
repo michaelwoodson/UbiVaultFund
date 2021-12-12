@@ -1,14 +1,13 @@
-# UBI Vault Fund
+# &#128293; &#128167; UBI Vault Fund &#128167; &#128293;
 
-To test deploying the fund locally against a fork of mainnet, copy `.env.sample` to `.env` and enter the `ALCHEMY_KEY`. Then start the forked node:
 
-```shell
-npx hardhat node
-```
+## In a nutshell
 
-To deploy to the forked node:
+Just send ETH to `0x3B8b1C455D3557919cec66597aa70061CFCD04C2`, it will be donated to a fund that uses proceeds from DeFi to support a universal basic income.
 
-```shell
-npx hardhat run scripts/deploy.js
-```
+## Links
 
+* [UBI Vault Fund on Etherscan](https://etherscan.io/address/0x3B8b1C455D3557919cec66597aa70061CFCD04C2) <- Contract deployed to Ethereum mainnet
+* [UBI DAO Governance](https://gov.proofofhumanity.id/) <- The DAO that controls this fund
+* [Humanitarian Vaults](https://app.democracy.earth/#/) <- Stake ETH here to support UBI (withdraw any time w/profits)
+* [Yearn Finance](https://docs.yearn.finance/getting-started/intro) <- The DAO that manages/optimizes the DeFi investments
